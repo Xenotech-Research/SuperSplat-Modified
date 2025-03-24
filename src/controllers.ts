@@ -32,11 +32,19 @@ class PointerController {
             
             var result = false;
 
+            // enlatge bounding box by 5% 
+            const bound2 = new BoundingBox();
+            bound2.copy(bound);
+            bound2.halfExtents.copy(bound.halfExtents);
+            bound2.halfExtents.x *= 2;
+            bound2.halfExtents.y *= 2;
+            bound2.halfExtents.z *= 2;
+
             // the cam should not enter the scene bounding box (TODO: change to the bounds of each entity)
-            result = result || bound.containsPoint(cameraPos);
+            result = result || bound2.containsPoint(cameraPos);
 
             // the cam should not be below the lower bound of the scene bounding box
-            result = result || cameraPos.y < bound.getMin().y;
+            result = result || cameraPos.y < bound2.getMin().y;
 
             return result;
         }
