@@ -1,4 +1,4 @@
-import { Vec3, math } from 'playcanvas';
+import { BoundingBox, Vec3, math } from 'playcanvas';
 
 import { Camera } from './camera';
 
@@ -27,6 +27,19 @@ class PointerController {
             const c2 = Math.cos(-ey);
             result.set(-c1 * s2, s1, c1 * c2);
         };
+
+        const isCameraPositionInvalid = (cameraPos: Vec3, bound: BoundingBox) => {
+            
+            var result = false;
+
+            // the cam should not enter the scene bounding box (TODO: change to the bounds of each entity)
+            result = result || bound.containsPoint(cameraPos);
+
+            // the cam should not be below the lower bound of the scene bounding box
+            result = result || cameraPos.y < bound.getMin().y;
+
+            return result;
+        }
         
 
         const orbit = (dx: number, dy: number) => {
@@ -43,7 +56,7 @@ class PointerController {
             cameraPosition.copy(forwardVec);
             cameraPosition.mulScalar(camera.distance * camera.sceneRadius / camera.fovFactor);
             cameraPosition.add(camera.focalPoint);
-            if (camera.scene.bound.containsPoint(cameraPosition)) {
+            if (isCameraPositionInvalid(cameraPosition, camera.scene.bound)) {
                 return;
             }
 
@@ -69,7 +82,7 @@ class PointerController {
             cameraPosition.copy(forwardVec);
             cameraPosition.mulScalar(camera.distance * camera.sceneRadius / camera.fovFactor);
             cameraPosition.add(worldDiff);
-            if (camera.scene.bound.containsPoint(cameraPosition)){
+            if (isCameraPositionInvalid(cameraPosition, camera.scene.bound)) {
                 return;
             }
 
@@ -88,7 +101,7 @@ class PointerController {
             cameraPosition.copy(forwardVec);
             cameraPosition.mulScalar(newDistance * camera.sceneRadius / camera.fovFactor);
             cameraPosition.add(camera.focalPointTween.value);
-            if (camera.scene.bound.containsPoint(cameraPosition)) {
+            if (isCameraPositionInvalid(cameraPosition, camera.scene.bound)) {
                 return;
             }
 
