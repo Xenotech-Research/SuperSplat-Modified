@@ -1,6 +1,8 @@
-import { Vec3 } from 'playcanvas';
+import { Vec3, math } from 'playcanvas';
 
 import { Camera } from './camera';
+
+import { Scene } from './scene';
 
 const fromWorldPoint = new Vec3();
 const toWorldPoint = new Vec3();
@@ -15,9 +17,36 @@ class PointerController {
 
     constructor(camera: Camera, target: HTMLElement) {
 
+        // calculate the forward vector given azimuth and elevation
+        const calcForwardVec = (result: Vec3, azim: number, elev: number) => {
+            const ex = elev * math.DEG_TO_RAD;
+            const ey = azim * math.DEG_TO_RAD;
+            const s1 = Math.sin(-ex);
+            const c1 = Math.cos(-ex);
+            const s2 = Math.sin(-ey);
+            const c2 = Math.cos(-ey);
+            result.set(-c1 * s2, s1, c1 * c2);
+        };
+        
+
         const orbit = (dx: number, dy: number) => {
+
+
             const azim = camera.azim - dx * camera.scene.config.controls.orbitSensitivity;
             const elev = camera.elevation - dy * camera.scene.config.controls.orbitSensitivity;
+
+            // try calculating the new camera position, if it goes into the scene bounding box, then don't orbit
+            const forwardVec = new Vec3();
+            const cameraPosition = new Vec3();
+            const azimElev = camera.calculateAzimElev(azim, elev);
+            calcForwardVec(forwardVec, azimElev.azim, azimElev.elev);
+            cameraPosition.copy(forwardVec);
+            cameraPosition.mulScalar(camera.distance * camera.sceneRadius / camera.fovFactor);
+            cameraPosition.add(camera.focalPoint);
+            if (camera.scene.bound.containsPoint(cameraPosition)) {
+                return;
+            }
+
             camera.setAzimElev(azim, elev);
         };
 
@@ -33,12 +62,39 @@ class PointerController {
             worldDiff.sub2(toWorldPoint, fromWorldPoint);
             worldDiff.add(camera.focalPoint);
 
+            const forwardVec = new Vec3();
+            const cameraPosition = new Vec3();
+            const azimElev = camera.azimElevTween.value;
+            calcForwardVec(forwardVec, azimElev.azim, azimElev.elev);
+            cameraPosition.copy(forwardVec);
+            cameraPosition.mulScalar(camera.distance * camera.sceneRadius / camera.fovFactor);
+            cameraPosition.add(worldDiff);
+            if (camera.scene.bound.containsPoint(cameraPosition)){
+                return;
+            }
+
             camera.setFocalPoint(worldDiff);
         };
 
         const zoom = (amount: number) => {
-            camera.setDistance(camera.distance - (camera.distance * 0.999 + 0.001) * amount * camera.scene.config.controls.zoomSensitivity, 2);
+
+            const newDistance = camera.distance - (camera.distance * 0.999 + 0.001) * amount * camera.scene.config.controls.zoomSensitivity;
+
+            // try calculating the new camera position, if it goes into the scene bounding box, then don't zoom
+            const forwardVec = new Vec3();
+            const cameraPosition = new Vec3();
+            const azimElev = camera.azimElevTween.value;
+            calcForwardVec(forwardVec, azimElev.azim, azimElev.elev);
+            cameraPosition.copy(forwardVec);
+            cameraPosition.mulScalar(newDistance * camera.sceneRadius / camera.fovFactor);
+            cameraPosition.add(camera.focalPointTween.value);
+            if (camera.scene.bound.containsPoint(cameraPosition)) {
+                return;
+            }
+
+            camera.setDistance(newDistance, 2);
         };
+
 
         // mouse state
         const buttons = [false, false, false];

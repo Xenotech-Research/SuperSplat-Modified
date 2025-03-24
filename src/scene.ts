@@ -193,6 +193,8 @@ class Scene {
         this.dataProcessor = new DataProcessor(this.app.graphicsDevice);
         this.assetLoader = new AssetLoader(graphicsDevice, this.app.assets, events, this.app.graphicsDevice.maxAnisotropy);
 
+        // NOTE: Build 3D Scene & Camera here.
+
         // create root entities
         this.contentRoot = new Entity('contentRoot');
         this.app.root.addChild(this.contentRoot);

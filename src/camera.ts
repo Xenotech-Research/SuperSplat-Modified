@@ -209,6 +209,22 @@ class Camera extends Element {
         this.ortho = false;
     }
 
+    calculateAzimElev(azim: number, elev: number) {
+        // clamp
+        azim = mod(azim, 360);
+        elev = Math.max(this.minElev, Math.min(this.maxElev, elev));
+
+        // also hanfle wraparound, not goto, but virtually
+        if (this.azimElevTween.source.azim - azim < -180) {
+            azim += 360;
+        } else if (this.azimElevTween.source.azim - azim > 180) {
+            azim -= 360;
+        }
+
+        return { azim, elev };
+    }
+
+
     setDistance(distance: number, dampingFactorFactor: number = 1) {
         const controls = this.scene.config.controls;
 
