@@ -101,8 +101,8 @@ const loadCameraPoses = async (url: string, filename: string, events: Events) =>
 
         // sort entries by trailing number if it exists
         const sorter = (a: any, b: any) => {
-            const avalue = a.img_name?.match(/\d*$/)?.[0];
-            const bvalue = b.img_name?.match(/\d*$/)?.[0];
+            const avalue = a.id ?? a.img_name?.match(/\d*$/)?.[0];
+            const bvalue = b.id ?? b.img_name?.match(/\d*$/)?.[0];
             return (avalue && bvalue) ? parseInt(avalue, 10) - parseInt(bvalue, 10) : 0;
         };
 
@@ -116,6 +116,7 @@ const loadCameraPoses = async (url: string, filename: string, events: Events) =>
 
                 events.fire('camera.addPose', {
                     name: pose.img_name ?? `${filename}_${i}`,
+                    frame: i,
                     position: new Vec3(-p.x, -p.y, p.z),
                     target: new Vec3(-vec.x, -vec.y, vec.z)
                 });
@@ -128,7 +129,7 @@ const loadCameraPoses = async (url: string, filename: string, events: Events) =>
 const initFileHandler = (scene: Scene, events: Events, dropTarget: HTMLElement, remoteStorageDetails: RemoteStorageDetails) => {
 
     // returns a promise that resolves when the file is loaded
-    const handleImport = async (url: string, filename?: string, focusCamera = true, animationFrame = false) => {
+    const handleImport = async (url: string, filename?: string, animationFrame = false) => {
         try {
             if (!filename) {
                 // extract filename from url if one isn't provided
@@ -147,7 +148,6 @@ const initFileHandler = (scene: Scene, events: Events, dropTarget: HTMLElement, 
             } else if (lowerFilename.endsWith('.ply') || lowerFilename.endsWith('.splat')) {
                 const model = await scene.assetLoader.loadModel({ url, filename, animationFrame });
                 scene.add(model);
-                if (focusCamera) scene.camera.focus();
                 return model;
             } else {
                 throw new Error('Unsupported file type');
@@ -161,8 +161,8 @@ const initFileHandler = (scene: Scene, events: Events, dropTarget: HTMLElement, 
         }
     };
 
-    events.function('import', (url: string, filename?: string, focusCamera = true, animationFrame = false) => {
-        return handleImport(url, filename, focusCamera, animationFrame);
+    events.function('import', (url: string, filename?: string, animationFrame = false) => {
+        return handleImport(url, filename, animationFrame);
     });
 
     // create a file selector element as fallback when showOpenFilePicker isn't available
@@ -213,7 +213,7 @@ const initFileHandler = (scene: Scene, events: Events, dropTarget: HTMLElement, 
             // a frame number, e.g. "frame0001.ply", "frame0002.ply", etc.
             const isSequence = () => {
                 // eslint-disable-next-line regexp/no-super-linear-backtracking
-                const regex = /(.*?)(\d+).ply$/;
+                const regex = /(.*?)(\d+)(?:\.compressed)?\.ply$/;
                 const baseMatch = entries[0].file.name?.toLowerCase().match(regex);
                 if (!baseMatch) {
                     return false;
