@@ -129,7 +129,7 @@ const loadCameraPoses = async (url: string, filename: string, events: Events) =>
 const initFileHandler = (scene: Scene, events: Events, dropTarget: HTMLElement, remoteStorageDetails: RemoteStorageDetails) => {
 
     // returns a promise that resolves when the file is loaded
-    const handleImport = async (url: string, filename?: string, animationFrame = false) => {
+    const handleImport = async (url: string, filename?: string, animationFrame = false, position?: { x: number; y: number; z: number }) => {
         try {
             if (!filename) {
                 // extract filename from url if one isn't provided
@@ -148,6 +148,12 @@ const initFileHandler = (scene: Scene, events: Events, dropTarget: HTMLElement, 
             } else if (lowerFilename.endsWith('.ply') || lowerFilename.endsWith('.splat')) {
                 const model = await scene.assetLoader.loadModel({ url, filename, animationFrame });
                 scene.add(model);
+
+                // 如果调用时传了 position，则设置模型坐标
+                if (position) {
+                    model.move(new Vec3(position.x, position.y, position.z));
+                }
+
                 return model;
             } else {
                 throw new Error('Unsupported file type');
@@ -161,8 +167,9 @@ const initFileHandler = (scene: Scene, events: Events, dropTarget: HTMLElement, 
         }
     };
 
-    events.function('import', (url: string, filename?: string, animationFrame = false) => {
-        return handleImport(url, filename, animationFrame);
+    events.function('import', (url: string, filename?: string, animationFrame = false, position?: { x: number; y: number; z: number }) => {
+        console.log('import', url, filename, animationFrame, position);
+        return handleImport(url, filename, animationFrame, position);
     });
 
     // create a file selector element as fallback when showOpenFilePicker isn't available

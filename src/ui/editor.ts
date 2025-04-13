@@ -120,16 +120,19 @@ class EditorUI {
         const menu = new Menu(events);
 
         canvasContainer.dom.appendChild(canvas);
-        canvasContainer.append(appLabel);
-        canvasContainer.append(cursorLabel);
-        canvasContainer.append(toolsContainer);
-        canvasContainer.append(scenePanel);
-        canvasContainer.append(viewPanel);
-        canvasContainer.append(colorPanel);
-        canvasContainer.append(bottomToolbar);
-        canvasContainer.append(rightToolbar);
-        canvasContainer.append(modeToggle);
-        canvasContainer.append(menu);
+
+        if(!remoteStorageMode) {
+            canvasContainer.append(appLabel);
+            canvasContainer.append(cursorLabel);
+            canvasContainer.append(toolsContainer);
+            canvasContainer.append(scenePanel);
+            canvasContainer.append(viewPanel);
+            canvasContainer.append(colorPanel);
+            canvasContainer.append(bottomToolbar);
+            canvasContainer.append(rightToolbar);
+            canvasContainer.append(modeToggle);
+            canvasContainer.append(menu);
+        }
 
         // view axes container
         const viewCube = new ViewCube(events);
@@ -147,8 +150,8 @@ class EditorUI {
         const dataPanel = new DataPanel(events);
 
         mainContainer.append(canvasContainer);
-        mainContainer.append(timelinePanel);
-        mainContainer.append(dataPanel);
+        // mainContainer.append(timelinePanel);
+        // mainContainer.append(dataPanel);
 
         editorContainer.append(mainContainer);
 

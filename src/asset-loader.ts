@@ -16,6 +16,9 @@ interface ModelLoadRequest {
 // of splats so filesize must be known in order to allocate the correct amount
 // of memory.
 const deserializeFromSSplat = (data: ArrayBufferLike) => {
+
+    console.log('data', data);
+
     const totalSplats = data.byteLength / 32;
     const dataView = new DataView(data);
 
@@ -165,7 +168,7 @@ class AssetLoader {
         this.events.fire('startSpinner');
 
         return new Promise<Splat>((resolve, reject) => {
-            fetch(loadRequest.url || loadRequest.filename)
+            fetch(loadRequest.url || loadRequest.filename, { mode: 'cors' })
             .then((response) => {
                 if (!response || !response.ok || !response.body) {
                     reject(new Error('Failed to fetch splat data'));

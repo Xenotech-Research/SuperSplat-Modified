@@ -113,8 +113,12 @@ const main = async () => {
     // edit history
     const editHistory = new EditHistory(events);
 
+    // resolve scene config
+    const overrides = [ getURLArgs() ];
+    const sceneConfig = getSceneConfig(overrides);
+
     // editor ui
-    const editorUI = new EditorUI(events, !!remoteStorageDetails);
+    const editorUI = new EditorUI(events, (sceneConfig.file!=null && sceneConfig.file.length > 0));
 
     // create the graphics device
     const graphicsDevice = await createGraphicsDevice(editorUI.canvas, {
@@ -126,12 +130,9 @@ const main = async () => {
         powerPreference: 'high-performance'
     });
 
-    const overrides = [
-        getURLArgs()
-    ];
+    
 
-    // resolve scene config
-    const sceneConfig = getSceneConfig(overrides);
+    console.log(sceneConfig);
 
     // construct the manager
     const scene = new Scene(
@@ -273,6 +274,13 @@ const main = async () => {
                 URL.revokeObjectURL(url);
             }
         });
+    }
+
+    // if file exitss in the URL, load it
+    if (sceneConfig.file) {
+        console.log('Loading file from URL:', sceneConfig.file, sceneConfig.filePosition);
+        await events.invoke('import', sceneConfig.file, null, false, sceneConfig.filePosition);
+        events.fire('camera.toggleOverlay');
     }
 };
 

@@ -11,6 +11,8 @@ const sceneConfig = {
     selectedClr: DEFAULT_SELECTED_CLR,
     unselectedClr: DEFAULT_UNSELECTED_CLR,
     lockedClr: DEFAULT_LOCKED_CLR,
+    file: "",
+    filePosition: { x: 0, y: 0, z: 0 },
     camera: {
         pixelScale: 1,
         multisample: false,
@@ -123,6 +125,8 @@ class Params {
 
 const getSceneConfig = (overrides: any[]) => {
     const params = new Params(overrides);
+
+    console.log('params', params);
 
     const cmp = (a: any[], b: any[]) => {
         return a.length === b.length && a.every((v, i) => v === b[i]);
