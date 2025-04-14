@@ -71,6 +71,8 @@ class Scene {
         this.config = config;
         this.canvas = canvas;
 
+        const remoteStorageMode = !(this.config.file==null || this.config.file.length === 0);
+
         // configure the playcanvas application. we render to an offscreen buffer so require
         // only the simplest of backbuffers.
         this.app = new PCApp(canvas, { graphicsDevice });
@@ -210,10 +212,11 @@ class Scene {
         this.add(this.splatOverlay);
 
         this.grid = new Grid();
-        this.add(this.grid);
+        if (!remoteStorageMode) this.add(this.grid);
 
         this.outline = new Outline();
         this.add(this.outline);
+
         this.underlay = new Underlay();
         this.add(this.underlay);
     }

@@ -136,7 +136,10 @@ class EditorUI {
 
         // view axes container
         const viewCube = new ViewCube(events);
-        canvasContainer.append(viewCube);
+
+        if(!remoteStorageMode) {
+            canvasContainer.append(viewCube);
+        }
         events.on('prerender', (cameraMatrix: Mat4) => {
             viewCube.update(cameraMatrix);
         });

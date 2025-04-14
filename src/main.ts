@@ -279,8 +279,11 @@ const main = async () => {
     // if file exitss in the URL, load it
     if (sceneConfig.file) {
         console.log('Loading file from URL:', sceneConfig.file, sceneConfig.filePosition);
+        setBgClr(toColor({r:1, g:1, b:1, a:1}));
         await events.invoke('import', sceneConfig.file, null, false, sceneConfig.filePosition);
         events.fire('camera.toggleOverlay');
+        //setBgClr(toColor({r:1, g:1, b:1, a:1}));
+        events.fire('camera.setBound', false);
     }
 };
 

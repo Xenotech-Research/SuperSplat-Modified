@@ -44,7 +44,7 @@ class PointerController {
             result = result || bound2.containsPoint(cameraPos);
 
             // the cam should not be below the lower bound of the scene bounding box
-            result = result || cameraPos.y < bound2.getMin().y;
+            result = result || cameraPos.y < bound2.getMin().y || cameraPos.y < 0;
 
             return result;
         }

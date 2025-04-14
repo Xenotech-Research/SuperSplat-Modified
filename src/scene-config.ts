@@ -39,6 +39,7 @@ const sceneConfig = {
         orbitSensitivity: 0.3,
         zoomSensitivity: 0.4
     },
+    viewAvoidanceOffset: { x: 0, y: 0, z: 0 },
     debug: {
         showBound: false
     }
