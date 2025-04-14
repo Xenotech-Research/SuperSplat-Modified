@@ -80,11 +80,15 @@ class Camera extends Element {
 
     updateCameraUniforms: () => void;
 
-    constructor() {
+    viewAvoidanceOffset = new Vec3(0, 0, 0);
+
+    constructor(viewAvoidanceOffset?: { x: number; y: number; z: number }) {
         super(ElementType.camera);
         // create the camera entity
         this.entity = new Entity('Camera');
         this.entity.addComponent('camera');
+
+        this.viewAvoidanceOffset = viewAvoidanceOffset ? new Vec3(viewAvoidanceOffset.x, viewAvoidanceOffset.y, viewAvoidanceOffset.z) : this.viewAvoidanceOffset;
 
         // NOTE: this call is needed for refraction effect to work correctly, but
         // it slows rendering and should only be made when required.
@@ -264,7 +268,7 @@ class Camera extends Element {
 
         const target = document.getElementById('canvas-container');
 
-        this.controller = new PointerController(this, target);
+        this.controller = new PointerController(this, target, this.viewAvoidanceOffset);
 
         // apply scene config
         const config = this.scene.config;

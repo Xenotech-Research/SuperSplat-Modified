@@ -15,7 +15,7 @@ class PointerController {
     update: (deltaTime: number) => void;
     destroy: () => void;
 
-    constructor(camera: Camera, target: HTMLElement) {
+    constructor(camera: Camera, target: HTMLElement, viewAvoidanceOffset?: { x: number; y: number; z: number }) {
 
         // calculate the forward vector given azimuth and elevation
         const calcForwardVec = (result: Vec3, azim: number, elev: number) => {
@@ -39,6 +39,10 @@ class PointerController {
             bound2.halfExtents.x *= 2;
             bound2.halfExtents.y *= 2;
             bound2.halfExtents.z *= 2;
+
+            bound2.halfExtents.x *= (1 + viewAvoidanceOffset.x);
+            bound2.halfExtents.y *= (1 + viewAvoidanceOffset.y);
+            bound2.halfExtents.z *= (1 + viewAvoidanceOffset.z);
 
             // the cam should not enter the scene bounding box (TODO: change to the bounds of each entity)
             result = result || bound2.containsPoint(cameraPos);

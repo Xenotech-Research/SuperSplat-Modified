@@ -205,7 +205,7 @@ class Scene {
         this.app.root.addChild(this.cameraRoot);
 
         // create elements
-        this.camera = new Camera();
+        this.camera = new Camera(config.viewAvoidanceOffset);
         this.add(this.camera);
 
         this.splatOverlay = new SplatOverlay();
