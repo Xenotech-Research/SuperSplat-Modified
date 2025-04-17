@@ -284,6 +284,8 @@ const main = async () => {
         events.fire('camera.toggleOverlay');
         //setBgClr(toColor({r:1, g:1, b:1, a:1}));
         events.fire('camera.setBound', false);
+        //sceneConfig.controls.initialZoom = 1;
+        //events.fire('camera.reset');
     }
 };
 

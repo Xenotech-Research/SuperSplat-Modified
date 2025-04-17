@@ -297,7 +297,7 @@ class Camera extends Element {
 
         // initial camera position and orientation
         this.setAzimElev(controls.initialAzim, controls.initialElev, 0);
-        this.setDistance(controls.initialZoom, 0);
+        this.setDistance(controls.initialZoom * (1 + config.viewAvoidanceOffset.x), 0);
 
         // picker
         const { width, height } = this.scene.targetSize;
